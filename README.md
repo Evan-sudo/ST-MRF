@@ -45,6 +45,10 @@ mex convConst.cpp
 mex imResampleMex.cpp
 mex MinPooling.cpp
 ```
+#### Bugs
+The demo runs successfully on Win-X54, however, when I remex the cpp files on MacOS, it raises "Error using convConst" 
+
+
 
 ### Demo
 http://player.youku.com/player.php/sid/XMTU1NTAwOTAwMA==/v.swf
