@@ -1,9 +1,15 @@
 close all;
 clc;
 clear;
-
-video_path = '.\bali\';
+mex = 1;
+%video_path = './IEV2022/fall.mp4_img/';
+video_path = './bali/';
 img_files = dir([video_path '*.png']);
+save_path = './results/';
+output_path = './out_video/';
+mkdir(save_path);
+mkdir(output_path);
+
 
 %% parameter
 % DCP parameter
@@ -35,7 +41,7 @@ A=reshape(A,1,1,3);
 % init buffer
 D = min(I,[],3);        %Eq.(2)
 Dt=cat(3,D,D,D);        %init D_t buffer
-uD=convBox(D, D_r);     %mean filter of D
+uD=convBox(D, D_r, 1, mex);     %mean filter of D
 uD_t=cat(3,uD,uD,uD);   %init uD_t buffer
 pre_gray=gray_I;
 pre_I=I;
@@ -53,18 +59,18 @@ for n = 1 : numel(img_files)
         Dt(:,:,1)=[];       %pop the old D_t 
         Dt=cat(3,Dt,D);     %push the new D
         
-        uD=convBox(D, D_r); %mean filter of D   
+        uD=convBox(D, D_r, 1, mex); %mean filter of D   
         uD_t(:,:,1)=[];     %pop the old D_t
         uD_t=cat(3,uD_t,uD);%push the new uD
         
-        refine_D = stMRF(pre_gray, Dt, uD_t, lambda_t, D_r, eps); %Eq.(7)
+        refine_D = stMRF(pre_gray, Dt, uD_t, lambda_t, D_r, eps, mex); %Eq.(7)
     else
         Dt(:,:,1)=[];       %pop the old D_t
         Dt=cat(3,Dt,D);     %push the new D
         uD_t(:,:,1)=[];     %pop the old uD_t
         uD_t=cat(3,uD_t,uD);%push the new uD
         
-        refine_D = stMRF(pre_gray, Dt, uD_t, lambda_t, D_r, eps);
+        refine_D = stMRF(pre_gray, Dt, uD_t, lambda_t, D_r, eps, mex);
     end
     transmission = 1 - omega * bsxfun(@rdivide,refine_D, A);
     transmission = max(t0,transmission);
@@ -89,8 +95,28 @@ for n = 1 : numel(img_files)
     subplot(1,2,1);imshow(pre_I);title('Hazy');
     subplot(1,2,2);imshow(dehaze);title('ST-MRF');
     drawnow;
+
+    %% store the processed frames
+    path = [save_path,num2str(nFrames),'.jpg'];  
+    imwrite(dehaze,path)   %write to path
+
 end
+
 disp(['ST-MRF Dehazing:' num2str(nFrames/time) 'fps']);
+    
+%% createt the dehazing video
+    outputVideo = VideoWriter(fullfile(output_path,'out.avi'));
+    outputVideo.FrameRate = nFrames/time + 2;
+    open(outputVideo)
+    vid_dir = dir([save_path '*.jpg']);
+    for ii = 1:nFrames
+       img = imread([save_path vid_dir(ii).name]);
+       writeVideo(outputVideo,img);
+    end
+    close(outputVideo)
+    rmdir('./results/');
+
+
 
 
 
