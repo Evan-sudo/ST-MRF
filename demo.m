@@ -97,7 +97,7 @@ for n = 1 : numel(img_files)
     drawnow;
 
     %% store the processed frames
-    path = [save_path,num2str(nFrames),'.jpg'];  
+    path = [save_path,num2str(nFrames, ‘%06d'),'.jpg'];  
     imwrite(dehaze,path)   %write to path
 
 end
