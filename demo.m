@@ -1,7 +1,7 @@
 close all;
 clc;
 clear;
-mex = 1;
+nonmex = 1;
 %video_path = './IEV2022/fall.mp4_img/';
 video_path = './bali/';
 img_files = dir([video_path '*.png']);
