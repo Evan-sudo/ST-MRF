@@ -50,7 +50,10 @@ The demo runs successfully on Win-X54, however, when I remex the .cpp files on M
 
 ### Modifications
 Add mex option to processing functions.
+
 Add video_save part.
+
+Note: Only modifications to demo.m.
 
 ### Demo
 http://player.youku.com/player.php/sid/XMTU1NTAwOTAwMA==/v.swf
